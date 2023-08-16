@@ -26,7 +26,7 @@ public:
 
         //load img 1
         int width, height, nChannel;
-        stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(false);
         unsigned char* data = stbi_load(pathToImg.c_str(), &width, &height, &nChannel, 0);
         if(data) {
 
