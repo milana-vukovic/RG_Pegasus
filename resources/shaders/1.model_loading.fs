@@ -41,9 +41,9 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * light.diffuse * vec3(texture(texture_diffuse1, TexCoords));
 
-    //specular
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
+    //specular Blinn-Phong
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0f);
     vec3 specular = spec * light.specular * vec3(texture(texture_specular1, TexCoords).xxx);
 
     //attenuation

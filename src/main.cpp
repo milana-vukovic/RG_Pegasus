@@ -32,7 +32,7 @@ unsigned int loadCubemap(vector<std::string> faces);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-//PPocetna vrednost kamere
+//Pocetna vrednost kamere
 
 
 float lastX = SCR_WIDTH / 2.0;
@@ -147,6 +147,8 @@ int main()
 
     //stbi_set_flip_vertically_on_load(false);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     programState = new ProgramState;
     programState->LoadFromDisk("resources/programState.txt");
@@ -175,7 +177,8 @@ int main()
     Shader cubemapShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader transparentShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
 
-    Model ourModel("resources/objects/chair2/Armchair.obj");
+    Model ourModel("resources/objects/unicorn/flying-unicorn.obj");
+    Model columnModel("resources/objects/OldColumn_OBJ/OldColumn.obj");
 
     //skybox
 
@@ -235,7 +238,7 @@ int main()
     };
     unsigned int floorIndices[] = {
             0, 1, 3, // first triangle
-            0, 2, 3  // second triangle
+            0, 3, 2  // second triangle
     };
 
 
@@ -273,7 +276,7 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    Texture2D texture0("resources/textures/marble_tiles_difffuse2.jpg", GL_LINEAR, GL_REPEAT);
+    Texture2D texture0("resources/textures/floor.jpg", GL_LINEAR, GL_REPEAT);
     Texture2D texture1("resources/textures/floor_specular2.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
     floorShader.use();
     floorShader.setInt("texture_diffuse", 0);
@@ -292,16 +295,31 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    Texture2D transparentTexture("resources/textures/street_lamp.png", GL_LINEAR, GL_CLAMP_TO_EDGE);
+    Texture2D transparentTexture("resources/textures/tree1.png", GL_LINEAR, GL_CLAMP_TO_EDGE);
     transparentShader.use();
     transparentShader.setInt("texture1", 0);
     vector<glm::vec3> transparentPosition
             {
-                    glm::vec3(-15.0f, 2.0f, -15.0f),
-                    glm::vec3( 15.0f, 2.0f, -15.0f),
-                    glm::vec3( 5.0f, 2.0f, -15.0f),
-                    glm::vec3(-5.f, 2.0f, -15.0f)
+                    glm::vec3(-13.5f, 7.2f, -20.0f),
+                    //glm::vec3( -10.0f, 2.0f, 20.0f)
             };
+
+    // Columns
+    vector<glm::vec3> columnPosition
+            {
+                    glm::vec3(-8.0f, -2.0f, -3.0f),
+                    glm::vec3( 8.0f, -2.0f, -3.0f),
+                    glm::vec3( -14.2f, -2.0f, 8.0f),
+                    glm::vec3(14.2f, -2.0f, 8.0f)
+            };
+    vector<float> columnRotation
+            {
+                    0.0f,
+                    -180.0f,
+                    -90,
+                    -90
+            };
+
 
     // Skybox
     unsigned int skyboxVAO, skyboxVBO;
@@ -323,12 +341,12 @@ int main()
 //            "resources/textures/skybox/back.jpg"
 //    };
     vector<std::string> faces{
-            "resources/textures/sky/px.png",
-            "resources/textures/sky/nx.png",
-            "resources/textures/sky/py.png",
-            "resources/textures/sky/ny.png",
-            "resources/textures/sky/pz.png",
-            "resources/textures/sky/nz.png"
+            "resources/textures/sky3/px.png",
+            "resources/textures/sky3/nx.png",
+            "resources/textures/sky3/py.png",
+            "resources/textures/sky3/ny.png",
+            "resources/textures/sky3/pz.png",
+            "resources/textures/sky3/nz.png"
     };
     unsigned int cubemapTexture = loadCubemap(faces);
     cubemapShader.setInt("skybox", 0);
@@ -340,8 +358,8 @@ int main()
 
     PointLight pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0f, 5.0f);
-    pointLight.ambient = glm::vec3(0.4, 0.4, 0.2);
-    pointLight.diffuse = glm::vec3 (0.6, 0.5, 0.6);
+    pointLight.ambient = glm::vec3(0.6, 0.6, 0.4);
+    pointLight.diffuse = glm::vec3 (0.7, 0.6, 0.7);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
     pointLight.c = 1.0f;
     pointLight.l = 0.09f;
@@ -352,7 +370,7 @@ int main()
     while (!glfwWindowShouldClose(window)) {
         glm::vec3 lightPosition(2.0f, 1.0f, 2.0f);
 
-        //Zbog razzlicitog broja fps, a da bi brzia bila ista bez obzira na broj prolazaka kroz petlju
+        //Zbog razlicitog broja fps, a da bi brzina bila ista bez obzira na broj prolazaka kroz petlju
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -361,7 +379,6 @@ int main()
         // input
         // -----
         processInput(window);
-
 
 
         // render
@@ -376,7 +393,8 @@ int main()
         // chair
         ourShader.use();
 
-        pointLight.position = glm::vec3(4.0f * cos(currentFrame), 4.0f, 4.0f * sin(currentFrame));
+        //pointLight.position = glm::vec3(4.0f * cos(currentFrame), 4.0f, 4.0f * sin(currentFrame));
+        pointLight.position = glm::vec3(0.0f, 3.0f, 3.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -392,19 +410,24 @@ int main()
 
         float time = glfwGetTime();
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-        model = glm::rotate(model, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model,glm::vec3(0.01f));
+        model = glm::translate(model, glm::vec3(0.0f, -3.5f, 5.0f));
+        model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model,glm::vec3(0.5f));
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
-        // chair 2
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
-//        model = glm::scale(model,glm::vec3(0.5f));
-//        ourShader.setUniformMatrix4fv("model", glm::value_ptr(model));
-//        ourModel.Draw(ourShader);
-        //glBindVertexArray(0); // no need to unbind it every time
+        // column
+        glDisable(GL_CULL_FACE);
+        ourShader.use();
+
+        for (unsigned int i = 0; i < columnPosition.size(); i++){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, columnPosition[i]);
+            model = glm::rotate(model, glm::radians(columnRotation[i]), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model,glm::vec3(0.1f ));
+            ourShader.setMat4("model", model);
+            columnModel.Draw(ourShader);
+        }
 
         //floor
         floorShader.use();
@@ -435,6 +458,7 @@ int main()
 
 
         // Transparent objects
+        glDisable(GL_CULL_FACE);
         glBindVertexArray(transparentVAO);
         transparentShader.use();
         transparentShader.setMat4("view",view);
@@ -445,10 +469,11 @@ int main()
         for (unsigned int i = 0; i < transparentPosition.size(); i++){
             model = glm::mat4(1.0f);
             model = glm::translate(model, transparentPosition[i]);
-            model = glm::scale(model,glm::vec3(5.0f,10.0f, 0.0f ));
+            model = glm::scale(model,glm::vec3(30.0f,22.0f, 0.0f ));
             transparentShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
+        glEnable(GL_CULL_FACE);
 
 
         //TODO: Draw Skybox last
