@@ -53,6 +53,14 @@ struct PointLight{
     float l;
     float q;
 };
+struct DirLight{
+    glm::vec3 direction;
+
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+};
+
 
 struct ProgramState{
     glm::vec3 clearColor = glm::vec3(0.1);
@@ -114,6 +122,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 3);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -149,6 +158,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glEnable(GL_MULTISAMPLE);
 
     programState = new ProgramState;
     programState->LoadFromDisk("resources/programState.txt");
@@ -178,6 +188,7 @@ int main()
     Shader transparentShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
 
     Model ourModel("resources/objects/unicorn/flying-unicorn.obj");
+    Model rockModel("resources/objects/rock/stone7_uv.obj");
     Model columnModel("resources/objects/OldColumn_OBJ/OldColumn.obj");
 
     //skybox
@@ -331,15 +342,6 @@ int main()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-
-//    vector<std::string> faces{
-//            "resources/textures/skybox/right.jpg",
-//            "resources/textures/skybox/left.jpg",
-//            "resources/textures/skybox/top.jpg",
-//            "resources/textures/skybox/bottom.jpg",
-//            "resources/textures/skybox/front.jpg",
-//            "resources/textures/skybox/back.jpg"
-//    };
     vector<std::string> faces{
             "resources/textures/sky3/px.png",
             "resources/textures/sky3/nx.png",
@@ -365,6 +367,12 @@ int main()
     pointLight.l = 0.09f;
     pointLight.q = 0.032f;
 
+    DirLight dirLight;
+    dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+    dirLight.ambient = glm::vec3(0.2f);
+    dirLight.diffuse = glm::vec3(0.1f);
+    dirLight.specular = glm::vec3(0.1f);
+
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -383,16 +391,17 @@ int main()
 
         // render
         // ------
-        glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
+        //glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
+        glClearColor(0.1, 0.1, 0.1, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(programState->camera.Zoom), (float) SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = programState->camera.GetViewMatrix();
 
-        // chair
+        // Pegasus
         ourShader.use();
-
+        // Point light
         //pointLight.position = glm::vec3(4.0f * cos(currentFrame), 4.0f, 4.0f * sin(currentFrame));
         pointLight.position = glm::vec3(0.0f, 3.0f, 3.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
@@ -404,6 +413,12 @@ int main()
         ourShader.setFloat("pointLight.q", pointLight.q);
         ourShader.setVec3("viewPosition", programState->camera.Position);
 
+        //Dirlight
+        ourShader.setVec3("dirLight.direction", dirLight.direction);
+        ourShader.setVec3("dirLight.ambient", dirLight.ambient);
+        ourShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        ourShader.setVec3("dirLight.specular", dirLight.specular);
+
 
         ourShader.setMat4("view",view);
         ourShader.setMat4("projection", projection);
@@ -411,10 +426,20 @@ int main()
         float time = glfwGetTime();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -3.5f, 5.0f));
-        model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(280.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::scale(model,glm::vec3(0.5f));
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
+
+
+        // rock
+        time = glfwGetTime();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(10.0f, -1.7f, 0.0f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model,glm::vec3(0.5f, 2.0f, 2.0f));
+        ourShader.setMat4("model", model);
+        rockModel.Draw(ourShader);
 
         // column
         glDisable(GL_CULL_FACE);
@@ -447,9 +472,14 @@ int main()
         floorShader.setFloat("pointLight.q", pointLight.q);
         floorShader.setVec3("viewPosition", programState->camera.Position);
 
+        floorShader.setVec3("dirLight.direction", dirLight.direction);
+        floorShader.setVec3("dirLight.ambient", dirLight.ambient);
+        floorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        floorShader.setVec3("dirLight.specular", dirLight.specular);
+
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-        model = glm::scale(model,glm::vec3(30.0f));
+        model = glm::translate(model, glm::vec3(0.0f, -2.0f, 2.0f));
+        model = glm::scale(model,glm::vec3(20.0f));
         floorShader.setMat4("model", model);
         floorShader.setMat4("view",view);
         floorShader.setMat4("projection", projection);
@@ -579,6 +609,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
+    if(key == GLFW_KEY_I && action == GLFW_PRESS){
+        glEnable(GL_MULTISAMPLE);
+    }
+    if(key == GLFW_KEY_O && action == GLFW_PRESS){
+        glDisable(GL_MULTISAMPLE);
+    }
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
@@ -612,10 +648,13 @@ void DrawImGui(ProgramState* programState){
 
     {
         static float f = 0.0f;
-        ImGui::Begin("Test window");
-        ImGui::Text("Hello world");
-        ImGui::DragFloat("Drag slider", &f, 0.05f, 0.0, 1.0);
-        ImGui::ColorEdit3("Background color", (float*)&programState->clearColor);
+        ImGui::Begin("Camera info");
+        auto &c = programState->camera;
+        ImGui::Text("Camera position x:%f y:%f z%f", c.Position.x, c.Position.y, c.Position.z);
+        ImGui::Text("Camera pitch: %f", c.Pitch);
+        ImGui::Text("Camera yaw: %f", c.Yaw);
+        //ImGui::DragFloat("Drag slider", &f, 0.05f, 0.0, 1.0);
+        //ImGui::ColorEdit3("Background color", (float*)&programState->clearColor);
         ImGui::End();
     }
 
