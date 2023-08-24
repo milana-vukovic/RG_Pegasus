@@ -6,3 +6,4 @@ Ks  0.50 0.50 0.50
 Tf 1.00 1.00 1.00
 Ni 1.00
 map_Kd diffuse.jpg
+map_Ks diffuse.jpg

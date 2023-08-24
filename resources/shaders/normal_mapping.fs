@@ -88,5 +88,15 @@ void main()
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
     vec3 specular = vec3(0.2) * spec;
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
+
+    //-----
+    float c = 1.0;
+    float l = 0.009;
+    float q = 0.0032;
+
+    float distance = length(fs_in.TangentLightPos - fs_in.TangentFragPos);
+    float attenuation = 1.0 /(c + l * distance + q * distance * distance);
+
+    FragColor = vec4((ambient + diffuse + specular) * attenuation, 1.0);
+
 }

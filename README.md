@@ -23,10 +23,12 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://githu
 |  ***Anti-aliasing***  |
 | I | On |
 | O | Off |
+| ***Light*** |
+| P | On/Off |
 | **Esc** | **Exit** |
 
 # Projekat sadrži
--   **Blending**: discard
+-   **Blending (discard)**: drvo
 -   **Face culling**: primenjuje se za sve modele osim stubova
 -   **Advaced lighting**: osvetljenje se računa po Blinn-Phongovom modelu
 -   **Cubemaps (grupa A)**: skybox

@@ -63,6 +63,23 @@ struct DirLight{
     glm::vec3 specular;
 };
 
+struct SpotLight{
+    glm::vec3 position;
+    glm::vec3 direction;
+
+    float cutOff; //cos
+    float outerCutOff; //cos
+
+    float c;
+    float l;
+    float q;
+
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+
+};
+bool spotLightOn = true;
 
 struct ProgramState{
     glm::vec3 clearColor = glm::vec3(0.1);
@@ -185,7 +202,7 @@ int main()
     // ------------------------------------
     // vertex shader
     Shader ourShader("resources/shaders/1.model_loading.vs", "resources/shaders/1.model_loading.fs");
-    Shader floorShader("resources/shaders/floorShader.vs","resources/shaders/floorShader.fs");
+    //Shader floorShader("resources/shaders/floorShader.vs","resources/shaders/floorShader.fs");
     Shader cubemapShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader transparentShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
     Shader mappingShader("resources/shaders/normal_mapping.vs", "resources/shaders/normal_mapping.fs");
@@ -267,34 +284,34 @@ int main()
             1.0f,  0.5f,  0.0f,  1.0f,  0.0f
     };
     // Floor
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floorIndices), floorIndices, GL_STATIC_DRAW);
-
-    //position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    //normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    //texture coords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    Texture2D texture0("resources/textures/floor.jpg", GL_LINEAR, GL_REPEAT);
-    Texture2D texture1("resources/textures/lig_grey.jpg", GL_NEAREST, GL_CLAMP_TO_EDGE);
-    floorShader.use();
-    floorShader.setInt("texture_diffuse", 0);
-    floorShader.setInt("texture_specular", 1);
+//    unsigned int VBO, VAO, EBO;
+//    glGenVertexArrays(1, &VAO);
+//    glGenBuffers(1, &VBO);
+//    glGenBuffers(1, &EBO);
+//
+//    glBindVertexArray(VAO);
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
+//
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floorIndices), floorIndices, GL_STATIC_DRAW);
+//
+//    //position
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+//    glEnableVertexAttribArray(0);
+//    //normals
+//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+//    glEnableVertexAttribArray(1);
+//    //texture coords
+//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+//    glEnableVertexAttribArray(2);
+//
+//    Texture2D texture0("resources/textures/floor.jpg", GL_LINEAR, GL_REPEAT);
+//    Texture2D texture1("resources/textures/lig_grey.jpg", GL_NEAREST, GL_CLAMP_TO_EDGE);
+//    floorShader.use();
+//    floorShader.setInt("texture_diffuse", 0);
+//    floorShader.setInt("texture_specular", 1);
 
     // transparent VAO
     unsigned int transparentVAO, transparentVBO;
@@ -346,12 +363,12 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     vector<std::string> faces{
-            "resources/textures/sky3/px.png",
-            "resources/textures/sky3/nx.png",
-            "resources/textures/sky3/py.png",
-            "resources/textures/sky3/ny.png",
-            "resources/textures/sky3/pz.png",
-            "resources/textures/sky3/nz.png"
+            "resources/textures/sky4/px.jpg",
+            "resources/textures/sky4/nx.jpg",
+            "resources/textures/sky4/py.jpg",
+            "resources/textures/sky4/ny.jpg",
+            "resources/textures/sky4/pz.jpg",
+            "resources/textures/sky4/nz.jpg"
     };
     unsigned int cubemapTexture = loadCubemap(faces);
     cubemapShader.setInt("skybox", 0);
@@ -385,6 +402,18 @@ int main()
     dirLight.diffuse = glm::vec3(0.1f);
     dirLight.specular = glm::vec3(0.1f);
 
+    SpotLight spotLight;
+    spotLight.direction = glm::vec3 (0.0f, 0.0f, -1.0f);
+    spotLight.position = glm::vec3 (0.0f, 0.0f, 32.0f);
+    spotLight.ambient = glm::vec3(1.0, 1.0, 1.0);
+    spotLight.diffuse = glm::vec3 (1.0, 1.0, 1.0);
+    spotLight.specular = glm::vec3(1.0, 1.0, 1.0);
+    spotLight.c = 1.0f;
+    spotLight.l = 0.009f;
+    spotLight.q = 0.0032f;
+    spotLight.cutOff = glm::cos(glm::radians(15.0f));
+    spotLight.outerCutOff = glm::cos(glm::radians(16.5f));
+
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -415,7 +444,7 @@ int main()
         ourShader.use();
         // Point light
         //pointLight.position = glm::vec3(4.0f * cos(currentFrame), 1.0f, 4.0f * sin(currentFrame));
-        pointLight.position = glm::vec3(4.0f * cos(currentFrame), -1.0f, 4.0f);
+        pointLight.position = glm::vec3(4.0f * cos(currentFrame), -1.0f, 5.0f);
         //pointLight.position = glm::vec3(0.0f, 1.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -432,6 +461,19 @@ int main()
         ourShader.setVec3("dirLight.diffuse", dirLight.diffuse);
         ourShader.setVec3("dirLight.specular", dirLight.specular);
 
+        //Spotlight
+        //spotLight.position = glm::vec3(4.0f * cos(currentFrame), -1.0f, 4.0f);
+        ourShader.setVec3("spotLight.direction", spotLight.direction);
+        ourShader.setVec3("spotLight.ambient", spotLight.ambient);
+        ourShader.setVec3("spotLight.diffuse", spotLight.diffuse);
+        ourShader.setVec3("spotLight.specular", spotLight.specular);
+        ourShader.setFloat("spotLight.c", spotLight.c);
+        ourShader.setFloat("spotLight.l",spotLight.l);
+        ourShader.setFloat("spotLight.q",spotLight.q);
+        ourShader.setFloat("spotLight.cutOff", spotLight.cutOff);
+        ourShader.setFloat("spotLight.outerCutOff", spotLight.outerCutOff);
+        ourShader.setVec3("spotLight.position", spotLight.position);
+        ourShader.setBool("spotLightOn", spotLightOn);
 
         ourShader.setMat4("view",view);
         ourShader.setMat4("projection", projection);
@@ -470,7 +512,7 @@ int main()
         // ----------- Floor 2 ----------------
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, -6.0f, -2.0f));
+        model = glm::translate(model, glm::vec3(2.0f, -6.0f, -10.0f));
         model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::scale(model,glm::vec3(25.0f));
         mappingShader.use();
@@ -480,6 +522,7 @@ int main()
         mappingShader.setVec3("lightPos", pointLight.position);
         mappingShader.setVec3("viewPos", programState->camera.Position);
         mappingShader.setFloat("heightScale", heightScale);
+
 
         textureDiffuseMap.activeTexture(GL_TEXTURE0);
         textureDiffuseMap.bindTexture();
@@ -492,34 +535,34 @@ int main()
 
 
         //------------- Floor -------------
-        floorShader.use();
-        glBindVertexArray(VAO);
-
-        texture0.activeTexture(GL_TEXTURE0);
-        texture0.bindTexture();
-        texture1.activeTexture(GL_TEXTURE1);
-        texture1.bindTexture();
-
-        floorShader.setVec3("pointLight.position", pointLight.position);
-        floorShader.setVec3("pointLight.ambient", pointLight.ambient);
-        floorShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-        floorShader.setVec3("pointLight.specular", pointLight.specular);
-        floorShader.setFloat("pointLight.c", pointLight.c);
-        floorShader.setFloat("pointLight.l", pointLight.l);
-        floorShader.setFloat("pointLight.q", pointLight.q);
-        floorShader.setVec3("viewPosition", programState->camera.Position);
-
-        floorShader.setVec3("dirLight.direction", dirLight.direction);
-        floorShader.setVec3("dirLight.ambient", dirLight.ambient);
-        floorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
-        floorShader.setVec3("dirLight.specular", dirLight.specular);
-
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -6.0f, 2.0f));
-        model = glm::scale(model,glm::vec3(20.0f));
-        floorShader.setMat4("model", model);
-        floorShader.setMat4("view",view);
-        floorShader.setMat4("projection", projection);
+//        floorShader.use();
+//        glBindVertexArray(VAO);
+//
+//        texture0.activeTexture(GL_TEXTURE0);
+//        texture0.bindTexture();
+//        texture1.activeTexture(GL_TEXTURE1);
+//        texture1.bindTexture();
+//
+//        floorShader.setVec3("pointLight.position", pointLight.position);
+//        floorShader.setVec3("pointLight.ambient", pointLight.ambient);
+//        floorShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+//        floorShader.setVec3("pointLight.specular", pointLight.specular);
+//        floorShader.setFloat("pointLight.c", pointLight.c);
+//        floorShader.setFloat("pointLight.l", pointLight.l);
+//        floorShader.setFloat("pointLight.q", pointLight.q);
+//        floorShader.setVec3("viewPosition", programState->camera.Position);
+//
+//        floorShader.setVec3("dirLight.direction", dirLight.direction);
+//        floorShader.setVec3("dirLight.ambient", dirLight.ambient);
+//        floorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+//        floorShader.setVec3("dirLight.specular", dirLight.specular);
+//
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, glm::vec3(0.0f, -6.0f, 2.0f));
+//        model = glm::scale(model,glm::vec3(20.0f));
+//        floorShader.setMat4("model", model);
+//        floorShader.setMat4("view",view);
+//        floorShader.setMat4("projection", projection);
 
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -627,17 +670,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
-    // Promena boje
-    if(key == GLFW_KEY_C && action == GLFW_PRESS){
-        glClearColor(0.1, 0.3, 0.4, 1.0);
-    }
-    if(key == GLFW_KEY_UP && action == GLFW_PRESS){
-        //p = std::min(p+0.1, 1.0);
-        shininess += 2.0;
-    }
-    if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
-        shininess -= 2.0;
-    }
+
     if(key == GLFW_KEY_F1 && action == GLFW_PRESS){
         programState->ImGuiEnabled = !programState->ImGuiEnabled;
         //Da bi nam se pojavio kursor
@@ -653,6 +686,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
     if(key == GLFW_KEY_O && action == GLFW_PRESS){
         glDisable(GL_MULTISAMPLE);
+    }
+    if(key == GLFW_KEY_P && action == GLFW_PRESS){
+        if(spotLightOn){
+            spotLightOn = false;
+        }
+        else{
+            spotLightOn = true;
+        }
     }
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
@@ -689,7 +730,7 @@ void DrawImGui(ProgramState* programState){
         static float f = 0.0f;
         ImGui::Begin("Camera info");
         auto &c = programState->camera;
-        ImGui::Text("Camera position x:%f y:%f z%f", c.Position.x, c.Position.y, c.Position.z);
+        ImGui::Text("Camera position x:%f y:%f z:%f", c.Position.x, c.Position.y, c.Position.z);
         ImGui::Text("Camera pitch: %f", c.Pitch);
         ImGui::Text("Camera yaw: %f", c.Yaw);
         //ImGui::DragFloat("Drag slider", &f, 0.05f, 0.0, 1.0);
