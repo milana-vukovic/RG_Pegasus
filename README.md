@@ -1,3 +1,8 @@
+
+| ![img](img/Pegaz.png) | ![img](img/Pegaz2.png) |
+| --- | --- |
+
+
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://github.com/matf-racunarska-grafika/project_base.git`
 
