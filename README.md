@@ -44,3 +44,11 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://githu
 Školska 2022/2023. godina  
 Asistent: Marko Spasić  
 Profesor: dr  Vesna Marinković
+
+
+## Resursi
+Resursi se nalaze u ***resources*** direktorijumu. <br>
+Modeli i njihove teksture su preuzeti sa [TurboSquid.com](https://www.turbosquid.com/)<br>
+Teksture su preuzete sa [*Adobe Stock*](https://stock.adobe.com/) i [*textures.com*](https://www.textures.com/). <br>
+Skybox teksture su preuzete sa [*OpenGameArt.Org*](https://opengameart.org/content/cloudy-skyboxes).<br>
+
