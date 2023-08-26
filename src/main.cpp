@@ -149,7 +149,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Pegasus", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -283,35 +283,6 @@ int main()
             1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
             1.0f,  0.5f,  0.0f,  1.0f,  0.0f
     };
-    // Floor
-//    unsigned int VBO, VAO, EBO;
-//    glGenVertexArrays(1, &VAO);
-//    glGenBuffers(1, &VBO);
-//    glGenBuffers(1, &EBO);
-//
-//    glBindVertexArray(VAO);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
-//
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floorIndices), floorIndices, GL_STATIC_DRAW);
-//
-//    //position
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-//    glEnableVertexAttribArray(0);
-//    //normals
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-//    glEnableVertexAttribArray(1);
-//    //texture coords
-//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-//    glEnableVertexAttribArray(2);
-//
-//    Texture2D texture0("resources/textures/floor.jpg", GL_LINEAR, GL_REPEAT);
-//    Texture2D texture1("resources/textures/lig_grey.jpg", GL_NEAREST, GL_CLAMP_TO_EDGE);
-//    floorShader.use();
-//    floorShader.setInt("texture_diffuse", 0);
-//    floorShader.setInt("texture_specular", 1);
 
     // transparent VAO
     unsigned int transparentVAO, transparentVBO;
@@ -350,7 +321,28 @@ int main()
                     -90,
                     -90
             };
-
+    // Stones
+    vector<glm::vec3> stonePosition
+            {
+                    //glm::vec3(-8.0f, -5.0f, -16.0f),
+                    glm::vec3( -20.0f, -2.8f, 10.0f),
+                    glm::vec3( -18.0f, -4.0f, 18.5f),
+                    glm::vec3(21.0f, -3.0f, 15.0f)
+            };
+    vector<float> stoneRotation
+            {
+                    //0.0f,
+                    180.0f,
+                    -90,
+                    -90
+            };
+    vector<glm::vec3> stoneSize
+            {
+                    //glm::vec3(0.1f, 0.2f, 0.2f),
+                    glm::vec3( 0.3f, 0.2f, 0.3f),
+                    glm::vec3( 0.2f, 0.1f, 0.2f),
+                    glm::vec3(0.26f, 0.3f, 0.3f)
+            };
 
     // Skybox
     unsigned int skyboxVAO, skyboxVBO;
@@ -488,13 +480,23 @@ int main()
 
 
         // ------------- Rock ---------------
-        time = glfwGetTime();
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(10.0f, -5.9f, 0.0f));
+        model = glm::translate(model, glm::vec3(10.0f, -5.9f, -7.0f));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model,glm::vec3(0.3f, 2.0f, 2.0f));
+        model = glm::scale(model,glm::vec3(0.3f, 2.0f, 2.5f));
         ourShader.setMat4("model", model);
         rockModel.Draw(ourShader);
+
+        // ------------ Stones ---------------
+        for (unsigned int i = 0; i < stonePosition.size(); i++){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, stonePosition[i]);
+            model = glm::rotate(model, glm::radians(stoneRotation[i]), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model,stoneSize[i]);
+            ourShader.setMat4("model", model);
+            rockModel.Draw(ourShader);
+        }
 
         // ---------- Column ------------------
         glDisable(GL_CULL_FACE);
@@ -508,6 +510,7 @@ int main()
             ourShader.setMat4("model", model);
             columnModel.Draw(ourShader);
         }
+        glEnable(GL_CULL_FACE);
 
         // ----------- Floor 2 ----------------
 
