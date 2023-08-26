@@ -259,19 +259,6 @@ int main()
     };
 
 
-    //floor
-    float floorVertices[] = {
-            // positions                         //normals                           // texture coords
-            1.0f,  0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    10.0f, 10.0f,
-            1.0f, 0.0f, -1.0f,    0.0f, 1.0f, 0.0f,    10.0f, 0.0f,
-            -1.0f, 0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    0.0f, 10.0f,
-            -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,    0.0f, 0.0f
-    };
-    unsigned int floorIndices[] = {
-            0, 1, 3, // first triangle
-            0, 3, 2  // second triangle
-    };
-
 
     float transparentVertices[] = {
             // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
@@ -353,6 +340,7 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof (skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBindVertexArray(0);
 
     vector<std::string> faces{
             "resources/textures/sky4/px.jpg",
@@ -374,8 +362,6 @@ int main()
     mappingShader.setInt("normalMap", 1);
     mappingShader.setInt("depthMap", 2);
 
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //glBindVertexArray(0);
 
     //Light data
 
@@ -435,7 +421,6 @@ int main()
         //------------- Pegasus -----------------------
         ourShader.use();
         // Point light
-        //pointLight.position = glm::vec3(4.0f * cos(currentFrame), 1.0f, 4.0f * sin(currentFrame));
         pointLight.position = glm::vec3(4.0f * cos(currentFrame), -1.0f, 5.0f);
         //pointLight.position = glm::vec3(0.0f, 1.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
@@ -454,7 +439,6 @@ int main()
         ourShader.setVec3("dirLight.specular", dirLight.specular);
 
         //Spotlight
-        //spotLight.position = glm::vec3(4.0f * cos(currentFrame), -1.0f, 4.0f);
         ourShader.setVec3("spotLight.direction", spotLight.direction);
         ourShader.setVec3("spotLight.ambient", spotLight.ambient);
         ourShader.setVec3("spotLight.diffuse", spotLight.diffuse);
@@ -498,7 +482,7 @@ int main()
             rockModel.Draw(ourShader);
         }
 
-        // ---------- Column ------------------
+        // ---------- Column -----------------
         glDisable(GL_CULL_FACE);
         ourShader.use();
 
@@ -512,7 +496,7 @@ int main()
         }
         glEnable(GL_CULL_FACE);
 
-        // ----------- Floor 2 ----------------
+        // ----------- Floor  ----------------
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, -6.0f, -10.0f));
@@ -534,40 +518,6 @@ int main()
         textureHeightMap.activeTexture(GL_TEXTURE2);
         textureHeightMap.bindTexture();
         renderQuad();
-
-
-
-        //------------- Floor -------------
-//        floorShader.use();
-//        glBindVertexArray(VAO);
-//
-//        texture0.activeTexture(GL_TEXTURE0);
-//        texture0.bindTexture();
-//        texture1.activeTexture(GL_TEXTURE1);
-//        texture1.bindTexture();
-//
-//        floorShader.setVec3("pointLight.position", pointLight.position);
-//        floorShader.setVec3("pointLight.ambient", pointLight.ambient);
-//        floorShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-//        floorShader.setVec3("pointLight.specular", pointLight.specular);
-//        floorShader.setFloat("pointLight.c", pointLight.c);
-//        floorShader.setFloat("pointLight.l", pointLight.l);
-//        floorShader.setFloat("pointLight.q", pointLight.q);
-//        floorShader.setVec3("viewPosition", programState->camera.Position);
-//
-//        floorShader.setVec3("dirLight.direction", dirLight.direction);
-//        floorShader.setVec3("dirLight.ambient", dirLight.ambient);
-//        floorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
-//        floorShader.setVec3("dirLight.specular", dirLight.specular);
-//
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(0.0f, -6.0f, 2.0f));
-//        model = glm::scale(model,glm::vec3(20.0f));
-//        floorShader.setMat4("model", model);
-//        floorShader.setMat4("view",view);
-//        floorShader.setMat4("projection", projection);
-
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
         // ------------- Transparent objects ------------------------
@@ -623,7 +573,6 @@ int main()
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
-    //ourShader.deleteProgram();
     delete programState;
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
