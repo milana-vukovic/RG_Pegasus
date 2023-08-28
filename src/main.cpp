@@ -215,6 +215,7 @@ int main()
     Model ourModel("resources/objects/unicorn/flying-unicorn.obj");
     Model rockModel("resources/objects/rock/stone7_uv.obj");
     Model columnModel("resources/objects/OldColumn_OBJ/OldColumn.obj");
+    Model diamondModel("resources/objects/diamond/Diamond.obj");
 
     //skybox
 
@@ -491,7 +492,7 @@ int main()
         //------------- Pegasus -----------------------
         ourShader.use();
         // Point light
-        pointLight.position = glm::vec3(4.0f * cos(currentFrame), 0.0f, 5.0f);
+        pointLight.position = glm::vec3(4.0f * cos(currentFrame), 1.0f , 5.5f + sin(currentFrame) );
         //pointLight.position = glm::vec3(0.0f, 1.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -565,6 +566,16 @@ int main()
             columnModel.Draw(ourShader);
         }
         glEnable(GL_CULL_FACE);
+
+
+        // ------- Diamond ----------
+        ourShader.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, pointLight.position);
+        model = glm::scale(model, glm::vec3(0.01));
+        ourShader.setMat4("model", model);
+        diamondModel.Draw(ourShader);
+
 
         // ----------- Floor  ----------------
 

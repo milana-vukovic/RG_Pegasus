@@ -7,10 +7,8 @@
 | ![img](img/Pegaz.gif) |
 | --- |
 
-| ![img](img/Pegaz2.gif) |
-| --- |
 
-Youtube video: [Pegaz](https://youtu.be/7FZcY5ZNA18)<br>
+Youtube video: [Pegaz](https://youtu.be/2zrxpyFGInw)<br>
 
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://github.com/matf-racunarska-grafika/project_base.git`
@@ -46,7 +44,7 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://githu
 -   **Advaced lighting**: osvetljenje se računa po Blinn-Phongovom modelu
 -   **Cubemaps (grupa A)**: skybox
 -   **Normal i Parallax mapping (grupa B)**: ploče na podlozi
--   **Bloom (grupa B)**: na Pegazu kad je osvetljen
+-   **Bloom (grupa B)**: na dijamantu i presijavanje na Pegazu
 
 ## Detalji o kursu
 
