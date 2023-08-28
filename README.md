@@ -7,7 +7,10 @@
 | ![img](img/Pegaz.gif) |
 | --- |
 
-Youtube video: [Pegaz](https://youtu.be/ry6YgLCURp0)<br>
+| ![img](img/Pegaz2.gif) |
+| --- |
+
+Youtube video: [Pegaz](https://youtu.be/4jTCF0mqvfs)<br>
 
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://github.com/matf-racunarska-grafika/project_base.git`
@@ -31,9 +34,8 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://githu
 | D | Right |
 | ***Imgui*** |
 | F1 |  On/Off |
-|  ***Anti-aliasing***  |
-| I | On |
-| O | Off |
+|  ***Bloom***  |
+| B | On/Off |
 | ***Light*** |
 | P | On/Off |
 | **Esc** | **Exit** |
@@ -44,6 +46,7 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://githu
 -   **Advaced lighting**: osvetljenje se računa po Blinn-Phongovom modelu
 -   **Cubemaps (grupa A)**: skybox
 -   **Normal i Parallax mapping (grupa B)**: ploče na podlozi
+-   **Bloom (grupa B)**: na Pegazu kad je osvetljen
 
 ## Detalji o kursu
 

@@ -1,6 +1,7 @@
 #version 330 core
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 in vec2 TexCoords;
 
@@ -12,5 +13,6 @@ void main(){
     if(texColor.a < 0.6)
         discard;
     FragColor = texColor;
+    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 }

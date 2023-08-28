@@ -11,7 +11,7 @@
 class Texture2D {
     unsigned int m_Id;
 public:
-    Texture2D(std::string pathToImg, GLenum filtering, GLenum sampling){
+    Texture2D(std::string pathToImg, GLenum filtering, GLenum sampling, bool gammaCorrection){
 
         glGenTextures(1, &m_Id);
         glBindTexture(GL_TEXTURE_2D, m_Id);
@@ -31,18 +31,21 @@ public:
         if(data) {
 
             GLenum format;
+            GLenum internalFormat;
             if(nChannel == 1){
-                format = GL_RED;
+                internalFormat = format = GL_RED;
             }
             else if(nChannel == 3){
+                internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
                 format = GL_RGB;
             }
             else if(nChannel == 4){
+                internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
                 format = GL_RGBA;
             }
 
 
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }else{
             ASSERT(false, "Nije ucitana tekstura\n");
