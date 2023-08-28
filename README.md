@@ -8,7 +8,8 @@
 | --- |
 
 
-Youtube video: [Pegaz](https://youtu.be/2zrxpyFGInw)<br>
+## Youtube video: [Pegaz](https://youtu.be/2zrxpyFGInw)<br>
+
 
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času `https://github.com/matf-racunarska-grafika/project_base.git`
