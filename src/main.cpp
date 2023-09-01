@@ -492,7 +492,7 @@ int main()
         //------------- Pegasus -----------------------
         ourShader.use();
         // Point light
-        pointLight.position = glm::vec3(4.0f * cos(currentFrame), 1.0f , 5.5f + sin(currentFrame) );
+        pointLight.position = glm::vec3(4.5f * cos(currentFrame), 1.0f , 5.5f + sin(currentFrame) );
         //pointLight.position = glm::vec3(0.0f, 1.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -590,6 +590,8 @@ int main()
         mappingShader.setVec3("lightPos", pointLight.position);
         mappingShader.setVec3("viewPos", programState->camera.Position);
         mappingShader.setFloat("heightScale", heightScale);
+        //DirLight
+        mappingShader.setVec3("lightDir", dirLight.direction);
 
 
         textureDiffuseMap.activeTexture(GL_TEXTURE0);

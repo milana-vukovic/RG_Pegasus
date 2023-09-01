@@ -8,7 +8,7 @@
 | --- |
 
 
-## Youtube video: [Pegaz](https://youtu.be/2zrxpyFGInw)<br>
+## Youtube video: [Pegaz](https://youtu.be/x11AFyq58Uc)<br>
 
 
 # project_base

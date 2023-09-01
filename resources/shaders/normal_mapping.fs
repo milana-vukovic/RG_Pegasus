@@ -8,6 +8,7 @@ in VS_OUT {
     vec3 TangentLightPos;
     vec3 TangentViewPos;
     vec3 TangentFragPos;
+    vec3 TangentLightDir;
 } fs_in;
 
 uniform sampler2D diffuseMap;
@@ -84,10 +85,8 @@ void main()
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * color;
     // specular
-    vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-
     vec3 specular = vec3(0.2) * spec;
 
     //-----
@@ -98,7 +97,30 @@ void main()
     float distance = length(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float attenuation = 1.0 /(c + l * distance + q * distance * distance);
 
-    FragColor = vec4((ambient + diffuse + specular) * attenuation, 1.0);
+    vec4 pointLightResult = vec4((ambient + diffuse + specular) * attenuation, 1.0);
+
+
+    //------ Dirlight
+    //ambient
+    ambient = 0.1 * color;
+
+    //diffuse
+    lightDir = normalize(-fs_in.TangentLightDir);
+    diff = max(dot(lightDir, normal), 0.0);
+    diffuse = diff * color;
+
+    //specular
+    halfwayDir = normalize(lightDir + viewDir);
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0f);
+    specular = vec3(0.2) * spec;;
+
+    vec4 dirLightResult = vec4((ambient + diffuse + specular), 1.0) * 0.4;
+
+
+    //-----------
+
+
+    FragColor = pointLightResult + dirLightResult;
     BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 }
